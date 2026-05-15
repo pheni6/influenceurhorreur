@@ -1,0 +1,399 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-05-15T16:30:56.000Z",
+    "createdAt": "2026-05-15T16:28:04.098Z",
+    "versionId": "9f8f0ab8-8bb7-43a9-a1ce-316e58e70f3c",
+    "workflowId": "GuiBF4YQOScviAdb",
+    "nodes": [
+      {
+        "parameters": {},
+        "name": "Schedule_Daily",
+        "type": "n8n-nodes-base.cron",
+        "typeVersion": 1,
+        "position": [
+          -192,
+          -32
+        ],
+        "id": "daef0aba-794e-4e29-8c75-e50d33b0c725"
+      },
+      {
+        "parameters": {
+          "resource": "databasePage",
+          "operation": "getAll",
+          "databaseId": {
+            "__rl": true,
+            "value": "35e01785-9972-8053-a3c5-e9590a8b0d61",
+            "mode": "list",
+            "cachedResultName": "USINE_HORREUR_V1",
+            "cachedResultUrl": "https://www.notion.so/35e0178599728053a3c5e9590a8b0d61"
+          },
+          "options": {}
+        },
+        "name": "Get_Notion_Pages",
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2,
+        "position": [
+          16,
+          -32
+        ],
+        "id": "2f303780-9cfb-4567-8e3a-527691529117",
+        "credentials": {
+          "notionApi": {
+            "id": "3Y82e5htbJKej6mp",
+            "name": "Notion account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "rh2rksBguWxrlEmv",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/rh2rksBguWxrlEmv",
+            "cachedResultName": "02_Module_Audio"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          224,
+          -32
+        ],
+        "id": "a704fe46-b83b-41b1-b747-8fa8723e9cb0",
+        "name": "Call '02_Module_Audio'"
+      },
+      {
+        "parameters": {
+          "resource": "databasePage",
+          "operation": "update",
+          "pageId": {
+            "__rl": true,
+            "value": "={{ $('Get_Notion_Pages').item.json.id }}",
+            "mode": "id"
+          },
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "Audio URL|rich_text",
+                "textContent": "={{ $json.fileName }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2,
+        "position": [
+          432,
+          -32
+        ],
+        "id": "8fbf3868-ea81-450c-b8f5-f65e6b9168e6",
+        "name": "Update a database page",
+        "credentials": {
+          "notionApi": {
+            "id": "3Y82e5htbJKej6mp",
+            "name": "Notion account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "edue0sdYF90ljGt6",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/edue0sdYF90ljGt6",
+            "cachedResultName": "03_Module_Image"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          640,
+          -32
+        ],
+        "id": "a9e66cd3-4eff-401f-84fe-532ac12ddfdf",
+        "name": "Call '03_Module_Image'"
+      }
+    ],
+    "connections": {
+      "Schedule_Daily": {
+        "main": [
+          [
+            {
+              "node": "Get_Notion_Pages",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get_Notion_Pages": {
+        "main": [
+          [
+            {
+              "node": "Call '02_Module_Audio'",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Call '02_Module_Audio'": {
+        "main": [
+          [
+            {
+              "node": "Update a database page",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update a database page": {
+        "main": [
+          [
+            {
+              "node": "Call '03_Module_Image'",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Arnauld Mus",
+    "name": "Version 9f8f0ab8",
+    "description": "1ère version suite aux tests",
+    "autosaved": true
+  },
+  "activeVersionId": "9f8f0ab8-8bb7-43a9-a1ce-316e58e70f3c",
+  "connections": {
+    "Schedule_Daily": {
+      "main": [
+        [
+          {
+            "node": "Get_Notion_Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_Notion_Pages": {
+      "main": [
+        [
+          {
+            "node": "Call '02_Module_Audio'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call '02_Module_Audio'": {
+      "main": [
+        [
+          {
+            "node": "Update a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a database page": {
+      "main": [
+        [
+          {
+            "node": "Call '03_Module_Image'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-05-13T11:05:16.396Z",
+  "id": "GuiBF4YQOScviAdb",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "01_Principal_Orchestrateur",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Schedule_Daily",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -32
+      ],
+      "id": "daef0aba-794e-4e29-8c75-e50d33b0c725"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "35e01785-9972-8053-a3c5-e9590a8b0d61",
+          "mode": "list",
+          "cachedResultName": "USINE_HORREUR_V1",
+          "cachedResultUrl": "https://www.notion.so/35e0178599728053a3c5e9590a8b0d61"
+        },
+        "options": {}
+      },
+      "name": "Get_Notion_Pages",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2,
+      "position": [
+        16,
+        -32
+      ],
+      "id": "2f303780-9cfb-4567-8e3a-527691529117",
+      "credentials": {
+        "notionApi": {
+          "id": "3Y82e5htbJKej6mp",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "rh2rksBguWxrlEmv",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/rh2rksBguWxrlEmv",
+          "cachedResultName": "02_Module_Audio"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        -32
+      ],
+      "id": "a704fe46-b83b-41b1-b747-8fa8723e9cb0",
+      "name": "Call '02_Module_Audio'"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Get_Notion_Pages').item.json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Audio URL|rich_text",
+              "textContent": "={{ $json.fileName }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        -32
+      ],
+      "id": "8fbf3868-ea81-450c-b8f5-f65e6b9168e6",
+      "name": "Update a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "3Y82e5htbJKej6mp",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "edue0sdYF90ljGt6",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/edue0sdYF90ljGt6",
+          "cachedResultName": "03_Module_Image"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        640,
+        -32
+      ],
+      "id": "a9e66cd3-4eff-401f-84fe-532ac12ddfdf",
+      "name": "Call '03_Module_Image'"
+    }
+  ],
+  "origin": "n8n",
+  "pinData": {},
+  "repo": {
+    "owner": "pheni6",
+    "name": "influenceurhorreur"
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-05-13T11:05:16.399Z",
+      "createdAt": "2026-05-13T11:05:16.399Z",
+      "role": "workflow:owner",
+      "workflowId": "GuiBF4YQOScviAdb",
+      "projectId": "hnipETLsZvgOmOcj"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-05-15T16:28:04.097Z",
+  "versionId": "9f8f0ab8-8bb7-43a9-a1ce-316e58e70f3c"
+}
