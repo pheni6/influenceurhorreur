@@ -1,0 +1,70 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Replace me with your logic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-05-15T12:10:54.114Z",
+  "id": "rYyIK9lCbB1PWxgN",
+  "isArchived": true,
+  "meta": null,
+  "name": "My Sub-Workflow 1",
+  "nodes": [
+    {
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "b5942df6-0160-4ef7-965d-57583acdc8aa",
+      "name": "Replace me with your logic",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        520,
+        340
+      ],
+      "parameters": {}
+    }
+  ],
+  "origin": "n8n",
+  "pinData": {},
+  "repo": {
+    "owner": "pheni6",
+    "name": "influenceurhorreur"
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-05-15T12:10:54.126Z",
+      "createdAt": "2026-05-15T12:10:54.126Z",
+      "role": "workflow:owner",
+      "workflowId": "rYyIK9lCbB1PWxgN",
+      "projectId": "hnipETLsZvgOmOcj"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-05-15T12:11:18.000Z",
+  "versionId": "b90dca7b-c705-4c9a-8ac1-4587ee8fa638"
+}
