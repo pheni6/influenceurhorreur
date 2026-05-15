@@ -1,0 +1,356 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Test Manuel Avatar": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many database pages": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Call '06_GetImages_After_Generation'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get many database pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-05-14T08:52:05.628Z",
+  "id": "aBQArJ8tza55xtUe",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "04_Usine_Avatar_Master",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "47e81f4e-24b8-48ad-800c-58ebdb4cf1a7",
+      "name": "Test Manuel Avatar",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        112,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "36001785-9972-804b-84d1-eedf482ed381",
+          "mode": "list",
+          "cachedResultName": "USINE_AVATAR_V1",
+          "cachedResultUrl": "https://www.notion.so/360017859972804b84d1eedf482ed381"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        512,
+        -400
+      ],
+      "id": "cec31f43-3b35-4b1d-a6ef-6e58f3f98c6b",
+      "name": "Get many database pages",
+      "credentials": {
+        "notionApi": {
+          "id": "3Y82e5htbJKej6mp",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        784,
+        -400
+      ],
+      "id": "7f3dd17d-d4c6-4709-a4f4-0033aeed7e5c",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://192.168.48.1:8188/prompt",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": {\n    \"1\": { \"inputs\": { \"ckpt_name\": \"juggernautXL_ragnarokBy.safetensors\" }, \"class_type\": \"CheckpointLoaderSimple\" },\n    \"2\": { \"inputs\": { \"text\": \"{{ $json.property_prompt_de_base }}\", \"clip\": [ \"1\", 1 ] }, \"class_type\": \"CLIPTextEncode\" },\n    \"3\": { \"inputs\": { \"text\": \"{{ $json.property_prompt_n_gatif }}\", \"clip\": [ \"1\", 1 ] }, \"class_type\": \"CLIPTextEncode\" },\n    \"4\": { \"inputs\": { \"width\": 768, \"height\": 1024, \"batch_size\": 1 }, \"class_type\": \"EmptyLatentImage\" },\n    \"5\": { \"inputs\": { \"seed\": {{ Math.floor(Math.random() * 1000000000) }}, \"steps\": 25, \"cfg\": 7.5, \"sampler_name\": \"dpmpp_2m\", \"scheduler\": \"karras\", \"denoise\": 1, \"model\": [ \"1\", 0 ], \"positive\": [ \"2\", 0 ], \"negative\": [ \"3\", 0 ], \"latent_image\": [ \"4\", 0 ] }, \"class_type\": \"KSampler\" },\n    \"6\": { \"inputs\": { \"filename_prefix\": \"{{ $json.property_id_avatar }}\", \"images\": [ \"7\", 0 ] }, \"class_type\": \"SaveImage\" },\n    \"7\": { \"inputs\": { \"samples\": [ \"5\", 0 ], \"vae\": [ \"1\", 2 ] }, \"class_type\": \"VAEDecode\" }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1072,
+        -192
+      ],
+      "id": "2bd0bdd5-c970-454f-872a-f1108440a54c",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "amount": 25
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1904,
+        -176
+      ],
+      "id": "65de12b8-aeab-4495-9fe1-98956321dcf6",
+      "name": "Wait",
+      "webhookId": "b6ae5d3d-2eff-4b64-a69c-5d26a6c88da2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "026faaad-81ed-45c2-b4de-3f811cfa62da",
+              "name": "=queueEmpty",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        -400
+      ],
+      "id": "e93674dd-c860-4a40-a866-a89fd503dd6c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "http://192.168.48.1:8188/queue",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1280,
+        -192
+      ],
+      "id": "4d8ba5af-c843-42d7-ad8d-4e8e134f8e6a",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Récupère la réponse du nœud HTTP (GET /queue)\nconst queueData = $input.first().json;\n\n// Vérifie si les listes queue_running et queue_pending sont vides\nconst isRunningEmpty = !queueData.queue_running || queueData.queue_running.length === 0;\nconst isPendingEmpty = !queueData.queue_pending || queueData.queue_pending.length === 0;\n\nconst queueEmpty = isRunningEmpty && isPendingEmpty;\n\nreturn [{ json: { queueEmpty } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        -192
+      ],
+      "id": "06205f90-3a55-4bc9-94de-4be458777fe8",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d32d6afa-d33f-4670-a7ae-6b744b2534cb",
+              "leftValue": "={{ $json.queueEmpty }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1696,
+        -192
+      ],
+      "id": "71b1da76-87e5-49f6-9aa6-e5743ac69084",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "5FFRjg8VKvKPRgrX",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/5FFRjg8VKvKPRgrX",
+          "cachedResultName": "06_GetImages_After_Generation"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        992,
+        -496
+      ],
+      "id": "e32252fa-e9c0-460c-8080-d13c9f7a7ce8",
+      "name": "Call '06_GetImages_After_Generation'"
+    }
+  ],
+  "origin": "n8n",
+  "pinData": {},
+  "repo": {
+    "owner": "pheni6",
+    "name": "influenceurhorreur"
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-05-14T08:52:05.632Z",
+      "createdAt": "2026-05-14T08:52:05.632Z",
+      "role": "workflow:owner",
+      "workflowId": "aBQArJ8tza55xtUe",
+      "projectId": "hnipETLsZvgOmOcj"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-05-15T13:06:40.134Z",
+  "versionId": "d104d4b6-0863-4e7b-aaa5-ab067f5794f0"
+}
