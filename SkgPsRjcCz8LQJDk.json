@@ -1,0 +1,139 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Générer 3 Concepts": {
+      "main": [
+        [
+          {
+            "node": "Idées Lugubres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Idées Lugubres": {
+      "main": [
+        [
+          {
+            "node": "Remplir USINE_AVATAR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-05-14T09:10:47.930Z",
+  "id": "SkgPsRjcCz8LQJDk",
+  "isArchived": false,
+  "meta": null,
+  "name": "05_Generateur_Idees_Notion_Seul",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f89c6e17-9864-4691-bad5-2f7b56bfde44",
+      "name": "Générer 3 Concepts",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        288,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    \"nom\": \"Le Collectionneur d'Os\",\n    \"id_avatar\": \"AVT_OS\",\n    \"prompt\": \"Hyper-realistic close up of a creature wearing a mask made of human teeth and bone, dark empty eye sockets, cinematic horror lighting, damp cave background, 8k, Juggernaut XL style\",\n    \"negatif\": \"human, plastic, bright, happy, cartoon, blurry\",\n    \"description\": \"Une entité ancestrale qui collectionne les restes de ses victimes.\",\n    \"style\": \"Réaliste / Macabre\"\n  },\n  {\n    \"nom\": \"L'Hybride des Abysses\",\n    \"id_avatar\": \"AVT_ABYSS\",\n    \"prompt\": \"Lovecraftian beast, half-human half-deep sea fish, translucent pale skin, needle-like teeth, glowing bioluminescent veins, underwater eerie atmosphere, dark water, high detail\",\n    \"negatif\": \"sunlight, beach, colorful, cute, drawing\",\n    \"description\": \"Une créature marine mutante pour des récits d'horreur aquatique.\",\n    \"style\": \"Lovecraftien\"\n  },\n  {\n    \"nom\": \"Le Gardien Putride\",\n    \"id_avatar\": \"AVT_PUTRIDE\",\n    \"prompt\": \"Decaying zombie knight in rusted medieval armor, maggots visible in flesh, glowing green necrotic eyes, standing in a graveyard at night, volumetric fog\",\n    \"negatif\": \"shiny armor, clean, alive, healthy, sunshine\",\n    \"description\": \"Un chevalier mort-vivant protecteur d'un secret impie.\",\n    \"style\": \"Médiéval Horreur\"\n  }\n];"
+      },
+      "id": "655baab4-17b2-438f-b1cc-5f3285cb10b9",
+      "name": "Idées Lugubres",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        496,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "36001785-9972-804b-84d1-eedf482ed381",
+          "mode": "list",
+          "cachedResultName": "USINE_AVATAR_V1",
+          "cachedResultUrl": "https://www.notion.so/360017859972804b84d1eedf482ed381"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Nom|title",
+              "title": "={{ $json.nom }}"
+            },
+            {
+              "key": "ID Avatar|rich_text",
+              "textContent": "={{ $json.id_avatar }}"
+            },
+            {
+              "key": "Prompt de base|rich_text",
+              "textContent": "={{ $json.prompt }}"
+            },
+            {
+              "key": "Prompt négatif|rich_text",
+              "textContent": "={{ $json.negatif }}"
+            },
+            {
+              "key": "Description|rich_text",
+              "textContent": "={{ $json.description }}"
+            },
+            {
+              "key": "Style visuel|select",
+              "selectValue": "={{ $json.style }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5873ee6f-2fc5-4b62-9e92-1d264c036ade",
+      "name": "Remplir USINE_AVATAR",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        272
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "3Y82e5htbJKej6mp",
+          "name": "Notion account"
+        }
+      }
+    }
+  ],
+  "origin": "n8n",
+  "pinData": {},
+  "repo": {
+    "owner": "pheni6",
+    "name": "influenceurhorreur"
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-05-14T09:10:47.932Z",
+      "createdAt": "2026-05-14T09:10:47.932Z",
+      "role": "workflow:owner",
+      "workflowId": "SkgPsRjcCz8LQJDk",
+      "projectId": "hnipETLsZvgOmOcj"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-05-14T09:24:43.899Z",
+  "versionId": "2628dab4-79ab-4222-8ef6-6490894d9de6"
+}
