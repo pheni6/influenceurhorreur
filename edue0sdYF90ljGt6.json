@@ -1,0 +1,623 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-05-15T16:30:34.000Z",
+    "createdAt": "2026-05-15T16:30:29.725Z",
+    "versionId": "8437f46a-923e-46b9-863c-db9f558899bc",
+    "workflowId": "edue0sdYF90ljGt6",
+    "nodes": [
+      {
+        "parameters": {},
+        "name": "Execute Workflow Trigger",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "cf7e192f-2cbc-4e6a-89a8-d8706e304edb"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://192.168.48.1:8188/prompt",
+          "sendBody": true,
+          "specifyBody": "=json",
+          "bodyParameters": {
+            "parameters": [
+              {}
+            ]
+          },
+          "jsonBody": "={\n  \"prompt\": {\n    \"1\": { \"inputs\": { \"ckpt_name\": \"juggernautXL_ragnarokBy.safetensors\" }, \"class_type\": \"CheckpointLoaderSimple\" },\n    \"2\": { \"inputs\": { \"text\": \"{{ $json.property_script_final }}\", \"clip\": [ \"1\", 1 ] }, \"class_type\": \"CLIPTextEncode\" },\n    \"3\": { \"inputs\": { \"text\": \"blur, cartoon, bright\", \"clip\": [ \"1\", 1 ] }, \"class_type\": \"CLIPTextEncode\" },\n    \"4\": { \"inputs\": { \"width\": 768, \"height\": 1024, \"batch_size\": 1 }, \"class_type\": \"EmptyLatentImage\" },\n    \"5\": { \"inputs\": { \"seed\": 209979949415909, \"steps\": 6, \"cfg\": 2, \"sampler_name\": \"euler\", \"scheduler\": \"simple\", \"denoise\": 1, \"model\": [ \"1\", 0 ], \"positive\": [ \"2\", 0 ], \"negative\": [ \"3\", 0 ], \"latent_image\": [ \"4\", 0 ] }, \"class_type\": \"KSampler\" },\n    \"6\": { \"inputs\": { \"filename_prefix\": \"HORREUR_{{ $json.id }}\", \"images\": [ \"7\", 0 ] }, \"class_type\": \"SaveImage\" },\n    \"7\": { \"inputs\": { \"samples\": [ \"5\", 0 ], \"vae\": [ \"1\", 2 ] }, \"class_type\": \"VAEDecode\" }\n  }\n} ",
+          "options": {}
+        },
+        "name": "ComfyUI_API_Call",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          208,
+          0
+        ],
+        "id": "9deaf14a-bc34-41a3-a608-41c12754a803"
+      },
+      {
+        "parameters": {
+          "amount": 20
+        },
+        "name": "Wait_for_Render",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1,
+        "position": [
+          464,
+          0
+        ],
+        "id": "09b71506-91c2-4d97-83b3-f3aee4eb42bd",
+        "webhookId": "67d5e30b-a035-455a-849e-0fa2b718ef1f"
+      },
+      {
+        "parameters": {
+          "fileSelector": "=/home/node/.n8n-files/comfy/HORREUR_{{ $json.id }}_*.png",
+          "options": {}
+        },
+        "name": "Read_Image_Disk",
+        "type": "n8n-nodes-base.readWriteFile",
+        "typeVersion": 1,
+        "position": [
+          704,
+          0
+        ],
+        "id": "8904434c-4188-4a1b-8269-6155082e8e70"
+      },
+      {
+        "parameters": {
+          "name": "={{ $json.fileName }}",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1lQYc4Bkv6YTnrSdGU3QGMHFgDCOiT5SX",
+            "mode": "id"
+          },
+          "options": {}
+        },
+        "name": "Google_Drive_Upload",
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          1312,
+          0
+        ],
+        "id": "be6419ca-a0fb-4566-9781-ad8f0eff295c",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "ciOO8TDmx4IlDdXr",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "databasePage",
+          "operation": "getAll",
+          "databaseId": {
+            "__rl": true,
+            "value": "35e01785-9972-8053-a3c5-e9590a8b0d61",
+            "mode": "list",
+            "cachedResultName": "USINE_HORREUR_V1",
+            "cachedResultUrl": "https://www.notion.so/35e0178599728053a3c5e9590a8b0d61"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2,
+        "position": [
+          32,
+          240
+        ],
+        "id": "d613e641-3e4d-4c59-9a72-802b802dcedf",
+        "name": "Get many database pages",
+        "credentials": {
+          "notionApi": {
+            "id": "3Y82e5htbJKej6mp",
+            "name": "Notion account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sortFieldsUi": {
+            "sortField": [
+              {
+                "fieldName": "fileName",
+                "order": "descending"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.sort",
+        "typeVersion": 1,
+        "position": [
+          912,
+          0
+        ],
+        "id": "d876f85e-7368-4668-84fa-85f12c3c54e7",
+        "name": "Sort"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.limit",
+        "typeVersion": 1,
+        "position": [
+          1120,
+          0
+        ],
+        "id": "af5b5845-f372-424f-9248-13e8b096fa32",
+        "name": "Limit"
+      },
+      {
+        "parameters": {
+          "resource": "databasePage",
+          "operation": "update",
+          "pageId": {
+            "__rl": true,
+            "value": "={{ $('Get many database pages').item.json.id }}",
+            "mode": "id"
+          },
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "Image|files",
+                "fileUrls": {
+                  "fileUrl": [
+                    {
+                      "name": "={{ $json.name }}",
+                      "url": "={{ $json.webContentLink }}"
+                    }
+                  ]
+                }
+              },
+              {
+                "key": "Statut|select",
+                "selectValue": "Terminé"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2,
+        "position": [
+          1504,
+          0
+        ],
+        "id": "2b834200-78fc-4fd5-8265-80594d60f6f8",
+        "name": "Update a database page",
+        "credentials": {
+          "notionApi": {
+            "id": "3Y82e5htbJKej6mp",
+            "name": "Notion account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Execute Workflow Trigger": {
+        "main": [
+          [
+            {
+              "node": "ComfyUI_API_Call",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ComfyUI_API_Call": {
+        "main": [
+          [
+            {
+              "node": "Wait_for_Render",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait_for_Render": {
+        "main": [
+          [
+            {
+              "node": "Read_Image_Disk",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read_Image_Disk": {
+        "main": [
+          [
+            {
+              "node": "Sort",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many database pages": {
+        "main": [
+          [
+            {
+              "node": "ComfyUI_API_Call",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sort": {
+        "main": [
+          [
+            {
+              "node": "Limit",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Limit": {
+        "main": [
+          [
+            {
+              "node": "Google_Drive_Upload",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google_Drive_Upload": {
+        "main": [
+          [
+            {
+              "node": "Update a database page",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Arnauld Mus",
+    "name": "Version 8437f46a",
+    "description": "1ère version suite aux tests",
+    "autosaved": true
+  },
+  "activeVersionId": "8437f46a-923e-46b9-863c-db9f558899bc",
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "ComfyUI_API_Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ComfyUI_API_Call": {
+      "main": [
+        [
+          {
+            "node": "Wait_for_Render",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait_for_Render": {
+      "main": [
+        [
+          {
+            "node": "Read_Image_Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read_Image_Disk": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many database pages": {
+      "main": [
+        [
+          {
+            "node": "ComfyUI_API_Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Google_Drive_Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google_Drive_Upload": {
+      "main": [
+        [
+          {
+            "node": "Update a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-05-13T11:51:56.319Z",
+  "id": "edue0sdYF90ljGt6",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "03_Module_Image",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cf7e192f-2cbc-4e6a-89a8-d8706e304edb"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://192.168.48.1:8188/prompt",
+        "sendBody": true,
+        "specifyBody": "=json",
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "jsonBody": "={\n  \"prompt\": {\n    \"1\": { \"inputs\": { \"ckpt_name\": \"juggernautXL_ragnarokBy.safetensors\" }, \"class_type\": \"CheckpointLoaderSimple\" },\n    \"2\": { \"inputs\": { \"text\": \"{{ $json.property_script_final }}\", \"clip\": [ \"1\", 1 ] }, \"class_type\": \"CLIPTextEncode\" },\n    \"3\": { \"inputs\": { \"text\": \"blur, cartoon, bright\", \"clip\": [ \"1\", 1 ] }, \"class_type\": \"CLIPTextEncode\" },\n    \"4\": { \"inputs\": { \"width\": 768, \"height\": 1024, \"batch_size\": 1 }, \"class_type\": \"EmptyLatentImage\" },\n    \"5\": { \"inputs\": { \"seed\": 209979949415909, \"steps\": 6, \"cfg\": 2, \"sampler_name\": \"euler\", \"scheduler\": \"simple\", \"denoise\": 1, \"model\": [ \"1\", 0 ], \"positive\": [ \"2\", 0 ], \"negative\": [ \"3\", 0 ], \"latent_image\": [ \"4\", 0 ] }, \"class_type\": \"KSampler\" },\n    \"6\": { \"inputs\": { \"filename_prefix\": \"HORREUR_{{ $json.id }}\", \"images\": [ \"7\", 0 ] }, \"class_type\": \"SaveImage\" },\n    \"7\": { \"inputs\": { \"samples\": [ \"5\", 0 ], \"vae\": [ \"1\", 2 ] }, \"class_type\": \"VAEDecode\" }\n  }\n} ",
+        "options": {}
+      },
+      "name": "ComfyUI_API_Call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9deaf14a-bc34-41a3-a608-41c12754a803"
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "name": "Wait_for_Render",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        464,
+        0
+      ],
+      "id": "09b71506-91c2-4d97-83b3-f3aee4eb42bd",
+      "webhookId": "67d5e30b-a035-455a-849e-0fa2b718ef1f"
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/home/node/.n8n-files/comfy/HORREUR_{{ $json.id }}_*.png",
+        "options": {}
+      },
+      "name": "Read_Image_Disk",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        704,
+        0
+      ],
+      "id": "8904434c-4188-4a1b-8269-6155082e8e70"
+    },
+    {
+      "parameters": {
+        "name": "={{ $json.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1lQYc4Bkv6YTnrSdGU3QGMHFgDCOiT5SX",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "name": "Google_Drive_Upload",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1312,
+        0
+      ],
+      "id": "be6419ca-a0fb-4566-9781-ad8f0eff295c",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ciOO8TDmx4IlDdXr",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "35e01785-9972-8053-a3c5-e9590a8b0d61",
+          "mode": "list",
+          "cachedResultName": "USINE_HORREUR_V1",
+          "cachedResultUrl": "https://www.notion.so/35e0178599728053a3c5e9590a8b0d61"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        32,
+        240
+      ],
+      "id": "d613e641-3e4d-4c59-9a72-802b802dcedf",
+      "name": "Get many database pages",
+      "credentials": {
+        "notionApi": {
+          "id": "3Y82e5htbJKej6mp",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "fileName",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        912,
+        0
+      ],
+      "id": "d876f85e-7368-4668-84fa-85f12c3c54e7",
+      "name": "Sort"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "af5b5845-f372-424f-9248-13e8b096fa32",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Get many database pages').item.json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Image|files",
+              "fileUrls": {
+                "fileUrl": [
+                  {
+                    "name": "={{ $json.name }}",
+                    "url": "={{ $json.webContentLink }}"
+                  }
+                ]
+              }
+            },
+            {
+              "key": "Statut|select",
+              "selectValue": "Terminé"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1504,
+        0
+      ],
+      "id": "2b834200-78fc-4fd5-8265-80594d60f6f8",
+      "name": "Update a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "3Y82e5htbJKej6mp",
+          "name": "Notion account"
+        }
+      }
+    }
+  ],
+  "origin": "n8n",
+  "pinData": {},
+  "repo": {
+    "owner": "pheni6",
+    "name": "influenceurhorreur"
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-05-13T11:51:56.321Z",
+      "createdAt": "2026-05-13T11:51:56.321Z",
+      "role": "workflow:owner",
+      "workflowId": "edue0sdYF90ljGt6",
+      "projectId": "hnipETLsZvgOmOcj"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-05-15T16:30:29.724Z",
+  "versionId": "8437f46a-923e-46b9-863c-db9f558899bc"
+}
