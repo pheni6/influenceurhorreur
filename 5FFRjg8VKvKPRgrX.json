@@ -1,0 +1,631 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-05-15T16:31:26.000Z",
+    "createdAt": "2026-05-15T13:24:36.519Z",
+    "versionId": "68b10e5d-6833-4965-8cd9-f89d80e855ed",
+    "workflowId": "5FFRjg8VKvKPRgrX",
+    "nodes": [
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "=https://api.notion.com/v1/pages/{{ $json.notion_page_id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "notionApi",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Notion-Version",
+                "value": "2022-06-28"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ \n  {\n    \"properties\": {\n      \"Image\": {\n        \"files\": $json.images_list.map(img => ({\n          \"name\": img.name,\n          \"external\": { \"url\": img.url }\n        }))\n      }\n    }\n  } \n}}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1696,
+          0
+        ],
+        "id": "3f0894dd-1635-4756-85c1-6effc61bd1b6",
+        "name": "HTTP Request",
+        "credentials": {
+          "notionApi": {
+            "id": "3Y82e5htbJKej6mp",
+            "name": "Notion account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const allOutputs = [];\n// On récupère la liste des personnages depuis le nœud Notion\nconst notionPages = $('Get many database pages').all(); \n\nfor (const item of $input.all()) {\n  const stdout = item.json.stdout || \"\";\n  const files = stdout.split('\\n').filter(f => f.trim() !== '');\n  \n  for (const file of files) {\n    // On cherche quelle page Notion correspond à ce fichier\n    // en comparant le nom du fichier avec l'id_avatar (ex: AVT_PUTRIDE)\n    const matchingPage = notionPages.find(page => \n      file.toUpperCase().includes(page.json.property_id_avatar.toUpperCase())\n    );\n\n    if (matchingPage) {\n      allOutputs.push({\n        json: {\n          fileName: file.trim(),\n          notion_page_id: matchingPage.json.id // On lie le BON ID\n        }\n      });\n    }\n  }\n}\n\nreturn allOutputs;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          896,
+          0
+        ],
+        "id": "bd24ba47-4a52-4f93-82e1-57854358288d",
+        "name": "Final_Grouping"
+      },
+      {
+        "parameters": {
+          "jsCode": "const grouped = {};\nconst fileMapping = $('Final_Grouping').all();\n\nfor (const uploadItem of $input.all()) {\n  const driveUrl = uploadItem.json.webContentLink;\n  const fileName = uploadItem.json.name; // On récupère le nom exact du fichier Drive\n\n  const match = fileMapping.find(m => m.json.fileName.includes(fileName));\n\n  if (match) {\n    const pageId = match.json.notion_page_id;\n\n    if (!grouped[pageId]) {\n      grouped[pageId] = {\n        notion_page_id: pageId,\n        images_list: [] // Ce sera maintenant une liste d'objets\n      };\n    }\n    \n    if (driveUrl) {\n      grouped[pageId].images_list.push({\n        name: fileName,\n        url: driveUrl\n      });\n    }\n  }\n}\n\nreturn Object.values(grouped).map(g => ({ json: g }));"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1504,
+          0
+        ],
+        "id": "94d9f544-8e3b-4e31-b450-4837dd7f335e",
+        "name": "Code2"
+      },
+      {
+        "parameters": {
+          "driveId": {
+            "__rl": true,
+            "value": "My Drive",
+            "mode": "list",
+            "cachedResultName": "My Drive",
+            "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "18FUgCoJYn5PuZ41_gnkpMjpOtqU5saPH",
+            "mode": "id"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          1312,
+          0
+        ],
+        "id": "667949b6-d892-4223-8bf5-58f357c7b2ff",
+        "name": "Upload file",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "ciOO8TDmx4IlDdXr",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fileSelector": "={{ $json.fileName }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.readWriteFile",
+        "typeVersion": 1.1,
+        "position": [
+          1104,
+          0
+        ],
+        "id": "f791925f-9a7c-4e8f-b326-79059eae9685",
+        "name": "Read/Write Files from Disk"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "4473b81f-6cda-4526-9e7e-265bc437489a",
+                "leftValue": "={{ $json.stdout }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          672,
+          0
+        ],
+        "id": "b7521339-82c1-4a45-86d2-de732f34c262",
+        "name": "Filter"
+      },
+      {
+        "parameters": {
+          "resource": "databasePage",
+          "operation": "getAll",
+          "databaseId": {
+            "__rl": true,
+            "value": "36001785-9972-804b-84d1-eedf482ed381",
+            "mode": "list",
+            "cachedResultName": "USINE_AVATAR_V1",
+            "cachedResultUrl": "https://www.notion.so/360017859972804b84d1eedf482ed381"
+          },
+          "returnAll": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2,
+        "position": [
+          272,
+          0
+        ],
+        "id": "694cc49a-88d9-4765-8d62-82c7a11cf971",
+        "name": "Get many database pages",
+        "credentials": {
+          "notionApi": {
+            "id": "3Y82e5htbJKej6mp",
+            "name": "Notion account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "executeOnce": false,
+          "command": "=ls /home/node/.n8n-files/comfy/{{ $json.property_id_avatar }}*.png "
+        },
+        "type": "n8n-nodes-base.executeCommand",
+        "typeVersion": 1,
+        "position": [
+          464,
+          0
+        ],
+        "id": "7b17d1eb-919c-4d0e-8e87-95b7880c1563",
+        "name": "Execute Command",
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          80,
+          0
+        ],
+        "id": "f535196d-68b1-4664-bec2-cb14c7bd9502",
+        "name": "When Executed by Another Workflow"
+      }
+    ],
+    "connections": {
+      "Final_Grouping": {
+        "main": [
+          [
+            {
+              "node": "Read/Write Files from Disk",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code2": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload file": {
+        "main": [
+          [
+            {
+              "node": "Code2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read/Write Files from Disk": {
+        "main": [
+          [
+            {
+              "node": "Upload file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter": {
+        "main": [
+          [
+            {
+              "node": "Final_Grouping",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many database pages": {
+        "main": [
+          [
+            {
+              "node": "Execute Command",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Execute Command": {
+        "main": [
+          [
+            {
+              "node": "Filter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Get many database pages",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Arnauld Mus",
+    "name": "Version 68b10e5d",
+    "description": "1ère version suite aux tests",
+    "autosaved": true
+  },
+  "activeVersionId": "68b10e5d-6833-4965-8cd9-f89d80e855ed",
+  "connections": {
+    "Final_Grouping": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Final_Grouping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many database pages": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get many database pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-05-14T11:38:57.660Z",
+  "id": "5FFRjg8VKvKPRgrX",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "06_GetImages_After_Generation",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://api.notion.com/v1/pages/{{ $json.notion_page_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "notionApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ \n  {\n    \"properties\": {\n      \"Image\": {\n        \"files\": $json.images_list.map(img => ({\n          \"name\": img.name,\n          \"external\": { \"url\": img.url }\n        }))\n      }\n    }\n  } \n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1696,
+        0
+      ],
+      "id": "3f0894dd-1635-4756-85c1-6effc61bd1b6",
+      "name": "HTTP Request",
+      "credentials": {
+        "notionApi": {
+          "id": "3Y82e5htbJKej6mp",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allOutputs = [];\n// On récupère la liste des personnages depuis le nœud Notion\nconst notionPages = $('Get many database pages').all(); \n\nfor (const item of $input.all()) {\n  const stdout = item.json.stdout || \"\";\n  const files = stdout.split('\\n').filter(f => f.trim() !== '');\n  \n  for (const file of files) {\n    // On cherche quelle page Notion correspond à ce fichier\n    // en comparant le nom du fichier avec l'id_avatar (ex: AVT_PUTRIDE)\n    const matchingPage = notionPages.find(page => \n      file.toUpperCase().includes(page.json.property_id_avatar.toUpperCase())\n    );\n\n    if (matchingPage) {\n      allOutputs.push({\n        json: {\n          fileName: file.trim(),\n          notion_page_id: matchingPage.json.id // On lie le BON ID\n        }\n      });\n    }\n  }\n}\n\nreturn allOutputs;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "bd24ba47-4a52-4f93-82e1-57854358288d",
+      "name": "Final_Grouping"
+    },
+    {
+      "parameters": {
+        "jsCode": "const grouped = {};\nconst fileMapping = $('Final_Grouping').all();\n\nfor (const uploadItem of $input.all()) {\n  const driveUrl = uploadItem.json.webContentLink;\n  const fileName = uploadItem.json.name; // On récupère le nom exact du fichier Drive\n\n  const match = fileMapping.find(m => m.json.fileName.includes(fileName));\n\n  if (match) {\n    const pageId = match.json.notion_page_id;\n\n    if (!grouped[pageId]) {\n      grouped[pageId] = {\n        notion_page_id: pageId,\n        images_list: [] // Ce sera maintenant une liste d'objets\n      };\n    }\n    \n    if (driveUrl) {\n      grouped[pageId].images_list.push({\n        name: fileName,\n        url: driveUrl\n      });\n    }\n  }\n}\n\nreturn Object.values(grouped).map(g => ({ json: g }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1504,
+        0
+      ],
+      "id": "94d9f544-8e3b-4e31-b450-4837dd7f335e",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "18FUgCoJYn5PuZ41_gnkpMjpOtqU5saPH",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1312,
+        0
+      ],
+      "id": "667949b6-d892-4223-8bf5-58f357c7b2ff",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ciOO8TDmx4IlDdXr",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "={{ $json.fileName }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1104,
+        0
+      ],
+      "id": "f791925f-9a7c-4e8f-b326-79059eae9685",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4473b81f-6cda-4526-9e7e-265bc437489a",
+              "leftValue": "={{ $json.stdout }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        0
+      ],
+      "id": "b7521339-82c1-4a45-86d2-de732f34c262",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "36001785-9972-804b-84d1-eedf482ed381",
+          "mode": "list",
+          "cachedResultName": "USINE_AVATAR_V1",
+          "cachedResultUrl": "https://www.notion.so/360017859972804b84d1eedf482ed381"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        272,
+        0
+      ],
+      "id": "694cc49a-88d9-4765-8d62-82c7a11cf971",
+      "name": "Get many database pages",
+      "credentials": {
+        "notionApi": {
+          "id": "3Y82e5htbJKej6mp",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=ls /home/node/.n8n-files/comfy/{{ $json.property_id_avatar }}*.png "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        464,
+        0
+      ],
+      "id": "7b17d1eb-919c-4d0e-8e87-95b7880c1563",
+      "name": "Execute Command",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        0
+      ],
+      "id": "f535196d-68b1-4664-bec2-cb14c7bd9502",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "origin": "n8n",
+  "pinData": {},
+  "repo": {
+    "owner": "pheni6",
+    "name": "influenceurhorreur"
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-05-14T11:38:57.666Z",
+      "createdAt": "2026-05-14T11:38:57.666Z",
+      "role": "workflow:owner",
+      "workflowId": "5FFRjg8VKvKPRgrX",
+      "projectId": "hnipETLsZvgOmOcj"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-05-15T13:24:36.517Z",
+  "versionId": "68b10e5d-6833-4965-8cd9-f89d80e855ed"
+}
