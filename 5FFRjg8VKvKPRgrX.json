@@ -423,7 +423,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ \n  {\n    \"properties\": {\n      \"Image\": {\n        \"files\": $json.images_list.map(img => ({\n          \"name\": img.name,\n          \"external\": { \"url\": img.url }\n        }))\n      }\n    }\n  } \n}}",
+        "jsonBody": "={{ \n  {\n    \"properties\": {\n      \"Image\": {\n        \"files\": $json.images_list.map(img => ({\n          \"name\": img.name,\n          \"external\": { \"url\": img.url }\n        }))\n      },\n      \"Statut\": {\n        \"select\": {\n          \"name\": \"Terminée\"\n        }\n      }\n    }\n  } \n}}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -496,7 +496,8 @@
           "id": "ciOO8TDmx4IlDdXr",
           "name": "Google Drive account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -558,6 +559,16 @@
           "cachedResultUrl": "https://www.notion.so/360017859972804b84d1eedf482ed381"
         },
         "returnAll": true,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Statut|select",
+              "condition": "does_not_equal",
+              "selectValue": "Terminée"
+            }
+          ]
+        },
         "options": {}
       },
       "type": "n8n-nodes-base.notion",
@@ -605,7 +616,43 @@
     }
   ],
   "origin": "n8n",
-  "pinData": {},
+  "pinData": {
+    "Code2": [
+      {
+        "json": {
+          "notion_page_id": "36201785-9972-8168-810a-d5258286373a",
+          "images_list": [
+            {
+              "name": "AVT_LOUP_00001_.png",
+              "url": "https://drive.google.com/uc?id=1VXExOwF1HEMKgnXHxk7T2AB2Abxc5wX-&export=download"
+            }
+          ]
+        }
+      },
+      {
+        "json": {
+          "notion_page_id": "36201785-9972-81e1-a2df-db8e59f00881",
+          "images_list": [
+            {
+              "name": "AVT_GOULE_00001_.png",
+              "url": "https://drive.google.com/uc?id=19Sov90RmOZ0MGy_vFe8cb-2W3dju7sr5&export=download"
+            }
+          ]
+        }
+      },
+      {
+        "json": {
+          "notion_page_id": "36201785-9972-813f-8e49-fb504e2604d3",
+          "images_list": [
+            {
+              "name": "AVT_VAMP_00001_.png",
+              "url": "https://drive.google.com/uc?id=1YrdKtYs5EBFWCUCYwq8Vx-UBvSzJY5yg&export=download"
+            }
+          ]
+        }
+      }
+    ]
+  },
   "repo": {
     "owner": "pheni6",
     "name": "influenceurhorreur"
@@ -626,6 +673,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2026-05-15T13:24:36.517Z",
-  "versionId": "68b10e5d-6833-4965-8cd9-f89d80e855ed"
+  "updatedAt": "2026-05-16T05:11:53.560Z",
+  "versionId": "5daece40-ca17-4292-adeb-04b56a7e8a7f"
 }
