@@ -29,7 +29,7 @@
       "main": [
         [
           {
-            "node": "Call '06_GetImages_After_Generation'",
+            "node": "Code in JavaScript1",
             "type": "main",
             "index": 0
           }
@@ -115,6 +115,17 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Call '06_GetImages_After_Generation'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "createdAt": "2026-05-14T08:52:05.628Z",
@@ -148,6 +159,16 @@
           "cachedResultUrl": "https://www.notion.so/360017859972804b84d1eedf482ed381"
         },
         "returnAll": true,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Statut|select",
+              "condition": "does_not_equal",
+              "selectValue": "Terminée"
+            }
+          ]
+        },
         "options": {}
       },
       "type": "n8n-nodes-base.notion",
@@ -322,11 +343,24 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        992,
-        -496
+        1488,
+        -528
       ],
       "id": "e32252fa-e9c0-460c-8080-d13c9f7a7ce8",
       "name": "Call '06_GetImages_After_Generation'"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { status: \"loop_completed\" } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        -352
+      ],
+      "id": "cd73f119-e4db-4259-8976-797dc5e9beaa",
+      "name": "Code in JavaScript1"
     }
   ],
   "origin": "n8n",
@@ -351,6 +385,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2026-05-15T13:06:40.134Z",
-  "versionId": "d104d4b6-0863-4e7b-aaa5-ab067f5794f0"
+  "updatedAt": "2026-05-16T04:48:55.440Z",
+  "versionId": "4b2ebf7a-93ae-47d4-b37a-f939b8633f9c"
 }
